@@ -16,4 +16,8 @@
 
 OCJIT = $(dir ocjit)
 
+USE_OCAMLFIND = true
+
+OCAMLPACKS += ctypes.foreign
+
 .SUBDIRS: $(glob D, *)

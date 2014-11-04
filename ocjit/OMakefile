@@ -14,29 +14,20 @@
 # License along with this program.  If not, see
 # <http://www.gnu.org/licenses/>.
 
-C_PROGRAM = ocjit_stub
 PROGRAM = ocjit
 
-CFLAGS = -g
 OCAMLFLAGS = -g
 
 BYTE_ENABLED = false
 NATIVE_ENABLED = true
 
 .SUBDIRS: src
-	C_FILES = $(removesuffix $(glob *.c))
-
-	INCLUDES += /usr/lib/ocaml
-
-	StaticCLibrary($(C_PROGRAM), $(C_FILES))
-
 	FILES = $(removesuffix $(glob *.ml))
 
 	OCamlLibrary($(PROGRAM), $(FILES))
 
-	.DEFAULT: $(PROGRAM).cmxa $(C_PROGRAM).a
+	.DEFAULT: $(PROGRAM).cmxa
 
 	.PHONY: clean
 	clean:
-		rm -f $(filter-proper-targets $(glob $(addsuffix .*, $(C_FILES)))) $(C_PROGRAM)
 		rm -f $(filter-proper-targets $(glob $(addsuffix .*, $(FILES)))) $(PROGRAM).a $(PROGRAM).cmxa

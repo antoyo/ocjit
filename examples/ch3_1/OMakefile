@@ -25,7 +25,6 @@ NATIVE_ENABLED = true
 	FILES = $(removesuffix $(glob *.ml))
 
 	OCAMLINCLUDES += $(OCJIT)/src
-	OCAML_CLIBS += $(OCJIT)/src/ocjit_stub
 	OCAML_LIBS += $(OCJIT)/src/ocjit
 	OCAML_LINK_FLAGS += -cclib -ljit
 
