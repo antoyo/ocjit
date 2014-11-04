@@ -43,6 +43,9 @@ let jit_context : jit_context typ = ptr void
 type jit_function = unit ptr
 let jit_function : jit_function typ = ptr void
 
+type jit_label = int
+let jit_label : Unsigned.uint64 typ = uint64_t
+
 type jit_type = unit ptr
 let jit_type : jit_type typ = ptr void
 
@@ -65,9 +68,23 @@ let jit_function_create = foreign "jit_function_create" (jit_context @-> jit_typ
 
 let jit_insn_add = foreign "jit_insn_add" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
 
+let jit_insn_branch_if_not = foreign "jit_insn_branch_if_not" (jit_function @-> jit_value @-> ptr jit_label @-> returning void)
+
+let jit_insn_call = foreign "jit_insn_call" (jit_function @-> string @-> jit_function @-> int @-> ptr jit_value @-> int @-> int @-> returning jit_value)
+
+let jit_insn_eq = foreign "jit_insn_eq" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
+
+let jit_insn_label = foreign "jit_insn_label" (jit_function @-> ptr jit_label @-> returning void)
+
+let jit_insn_lt = foreign "jit_insn_lt" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
+
 let jit_insn_mul = foreign "jit_insn_mul" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
 
 let jit_insn_return = foreign "jit_insn_return" (jit_function @-> jit_value @-> returning void)
+
+let jit_insn_sub = foreign "jit_insn_sub" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
+
+let jit_label_undefined = Unsigned.UInt64.of_int64 (Int64.of_int 4294967295)
 
 let jit_type_create_signature = foreign "jit_type_create_signature" (jit_abi @-> jit_type @-> ptr jit_type @-> int @-> int @-> returning jit_type)
 
