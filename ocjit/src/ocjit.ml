@@ -20,6 +20,8 @@ open Ctypes
 open Foreign
 open PosixTypes
 
+(* Types *)
+
 type jit_abi = JitAbiCdecl | JitAbiVararg | JitAbiStdcall | JitAbiFastcall
 
 let int_of_jit_abi = function
@@ -52,6 +54,17 @@ let jit_type : jit_type typ = ptr void
 type jit_value = unit ptr
 let jit_value : jit_value typ = ptr void
 
+(* Values *)
+
+let jit_call_nothrow = 1
+let jit_call_noreturn = 2
+let jit_call_tail = 4
+
+let jit_type_sys_int' = foreign_value "jit_type_sys_int" jit_type
+let jit_type_sys_int = !@ jit_type_sys_int'
+
+(* Functions *)
+
 let jit_context_build_end = foreign "jit_context_build_end" (jit_context @-> returning void)
 
 let jit_context_build_start = foreign "jit_context_build_start" (jit_context @-> returning void)
@@ -62,9 +75,18 @@ let jit_context_destroy = foreign "jit_context_destroy" (jit_context @-> returni
 
 let jit_function_apply = foreign "jit_function_apply" (jit_function @-> ptr (ptr void) @-> ptr void @-> returning void)
 
+let jit_function_clear_recompilable = foreign "jit_function_clear_recompilable" (jit_function @-> returning void)
+
 let jit_function_compile = foreign "jit_function_compile" (jit_function @-> returning void)
 
 let jit_function_create = foreign "jit_function_create" (jit_context @-> jit_type @-> returning jit_function)
+
+let compilation_function = jit_function @-> returning int
+let jit_function_get_on_demand_compiler = foreign "jit_function_get_on_demand_compiler" (jit_function @-> returning (funptr compilation_function))
+
+let jit_function_set_on_demand_compiler = foreign "jit_function_set_on_demand_compiler" (jit_function @-> funptr compilation_function @-> returning void)
+
+let jit_function_set_recompilable = foreign "jit_function_set_recompilable" (jit_function @-> returning void)
 
 let jit_insn_add = foreign "jit_insn_add" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
 
@@ -87,8 +109,5 @@ let jit_insn_sub = foreign "jit_insn_sub" (jit_function @-> jit_value @-> jit_va
 let jit_label_undefined = Unsigned.UInt64.of_int64 (Int64.of_int 4294967295)
 
 let jit_type_create_signature = foreign "jit_type_create_signature" (jit_abi @-> jit_type @-> ptr jit_type @-> int @-> int @-> returning jit_type)
-
-let jit_type_sys_int' = foreign_value "jit_type_sys_int" jit_type
-let jit_type_sys_int = !@ jit_type_sys_int'
 
 let jit_value_get_param = foreign "jit_value_get_param" (jit_function @-> int @-> returning jit_value)
