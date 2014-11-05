@@ -16,7 +16,6 @@
  * <http://www.gnu.org/licenses/>.
  *)
 
-open Ctypes
 open Ocjit
 
 let compile_mul_add jit_function =
@@ -32,20 +31,16 @@ let compile_mul_add jit_function =
 let () =
     let context = jit_context_create () in
 
-    let params = [ jit_type_sys_int; jit_type_sys_int; jit_type_sys_int ] in
-    let params_array = CArray.of_list jit_type params in
-    let signature = jit_type_create_signature JitAbiCdecl jit_type_sys_int (CArray.start params_array) (List.length params) 1 in
+    let signature = jit_type_create_signature jit_type_sys_int [ jit_type_sys_int; jit_type_sys_int; jit_type_sys_int ] in
     let jit_function = jit_function_create context signature in
     jit_function_set_recompilable jit_function;
     jit_function_set_on_demand_compiler jit_function compile_mul_add;
 
-    let result = allocate int 0 in
-    let arguments = List.map to_voidp [ allocate int 3; allocate int 5; allocate int 2 ] in
-    let arguments_array = CArray.of_list (ptr void) arguments in
-    jit_function_apply jit_function (CArray.start arguments_array) (to_voidp result);
+    let result = int_return in
+    jit_function_apply jit_function [ int_param 3; int_param 5; int_param 2 ] result;
 
     print_string "mul_add(3, 5, 2) = ";
-    print_int (!@ result);
+    print_int (get_return result);
     print_endline "";
 
     jit_context_build_start context;
@@ -54,13 +49,11 @@ let () =
     jit_function_compile jit_function;
     jit_context_build_end context;
 
-    let result = allocate int 0 in
-    let arguments = List.map to_voidp [ allocate int 4; allocate int 6; allocate int 3 ] in
-    let arguments_array = CArray.of_list (ptr void) arguments in
-    jit_function_apply jit_function (CArray.start arguments_array) (to_voidp result);
+    let result = int_return in
+    jit_function_apply jit_function [ int_param 4; int_param 6; int_param 3 ] result;
 
     print_string "mul_add(4, 6, 3) = ";
-    print_int (!@ result);
+    print_int (get_return result);
     print_endline "";
 
     jit_function_clear_recompilable jit_function;
