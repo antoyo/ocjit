@@ -128,6 +128,8 @@ let jit_function_set_on_demand_compiler = foreign "jit_function_set_on_demand_co
 
 let jit_function_set_recompilable = foreign "jit_function_set_recompilable" (jit_function @-> returning void)
 
+let jit_init = foreign "jit_init" (void @-> returning void)
+
 let jit_insn_add = foreign "jit_insn_add" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
 
 let jit_insn_branch_if_not = foreign "jit_insn_branch_if_not" (jit_function @-> jit_value @-> ptr jit_label @-> returning void)
@@ -148,7 +150,13 @@ let jit_insn_return = foreign "jit_insn_return" (jit_function @-> jit_value @-> 
 
 let jit_insn_sub = foreign "jit_insn_sub" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
 
+let jit_supports_threads = foreign "jit_supports_threads" (void @-> returning int)
+
+let jit_supports_virtual_memory = foreign "jit_supports_virtual_memory" (void @-> returning int)
+
 let jit_type_create_signature' = foreign "jit_type_create_signature" (jit_abi @-> jit_type @-> ptr jit_type @-> int @-> int @-> returning jit_type)
+
+let jit_uses_interpreter = foreign "jit_uses_interpreter" (void @-> returning int)
 
 let jit_value_get_param = foreign "jit_value_get_param" (jit_function @-> int @-> returning jit_value)
 
