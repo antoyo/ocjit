@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  *)
 
-open Ocjit
+open OcjitBind
 
 let compile_mul_add jit_function =
     let x = jit_value_get_param jit_function 0 in
@@ -36,8 +36,8 @@ let () =
     jit_function_set_recompilable jit_function;
     jit_function_set_on_demand_compiler jit_function compile_mul_add;
 
-    let result = int_return in
-    jit_function_apply jit_function [ int_param 3; int_param 5; int_param 2 ] result;
+    let result = sys_int_return in
+    jit_function_apply jit_function [ sys_int_param 3; sys_int_param 5; sys_int_param 2 ] result;
 
     print_string "mul_add(3, 5, 2) = ";
     print_int (get_return result);
@@ -49,8 +49,8 @@ let () =
     jit_function_compile jit_function;
     jit_context_build_end context;
 
-    let result = int_return in
-    jit_function_apply jit_function [ int_param 4; int_param 6; int_param 3 ] result;
+    let result = sys_int_return in
+    jit_function_apply jit_function [ sys_int_param 4; sys_int_param 6; sys_int_param 3 ] result;
 
     print_string "mul_add(4, 6, 3) = ";
     print_int (get_return result);

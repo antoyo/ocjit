@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  *)
 
-open Ocjit
+open OcjitBind
 
 let () =
     let context = jit_context_create () in
@@ -36,8 +36,8 @@ let () =
     jit_function_compile jit_function;
     jit_context_build_end context;
 
-    let result = int_return in
-    jit_function_apply jit_function [ int_param 3; int_param 5; int_param 2 ] result;
+    let result = sys_int_return in
+    jit_function_apply jit_function [ sys_int_param 3; sys_int_param 5; sys_int_param 2 ] result;
 
     print_string "mul_add(3, 5, 2) = ";
     print_int (get_return result);

@@ -16,7 +16,7 @@
  * <http://www.gnu.org/licenses/>.
  *)
 
-open Ocjit
+open OcjitBind
 
 let () =
     let context = jit_context_create () in
@@ -54,8 +54,8 @@ let () =
     jit_function_compile jit_function;
     jit_context_build_end context;
 
-    let result = int_return in
-    jit_function_apply jit_function [ int_param 375; int_param 625 ] result;
+    let result = sys_int_return in
+    jit_function_apply jit_function [ sys_int_param 375; sys_int_param 625 ] result;
 
     print_string "gcd(375, 625) = ";
     print_int (get_return result);
