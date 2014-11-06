@@ -136,6 +136,8 @@ let jit_insn_call' = foreign "jit_insn_call" (jit_function @-> string @-> jit_fu
 
 let jit_insn_eq = foreign "jit_insn_eq" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
 
+let jit_insn_ge = foreign "jit_insn_ge" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
+
 let jit_insn_label = foreign "jit_insn_label" (jit_function @-> ptr jit_label @-> returning void)
 
 let jit_insn_lt = foreign "jit_insn_lt" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)

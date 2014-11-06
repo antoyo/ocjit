@@ -21,21 +21,21 @@ open Ocjit
 let () =
     let signature = create_signature return_sys_int [ sys_int ] in
 
-    let my_function = create_function1 signature (fun x ->
-        return x
+    let (compiled_identity, identity) = create_function1 signature (fun _ x ->
+        ret x
     )
     in
 
-    let result = my_function 3 in
+    let result = compiled_identity 3 in
     print_int result;
     print_endline "";
 
     let signature = create_signature return_sys_int [ sys_int; sys_int; sys_int ] in
 
-    let my_function = create_function3 signature (fun x y z ->
-        x * y >>= (+) z
+    let (compiled_mul_add, mul_add) = create_function3 signature (fun _ x y z ->
+        x * y >>= (+) z >>= ret
     ) in
-    let result = my_function 3 5 2 in
+    let result = compiled_mul_add 3 5 2 in
 
     print_string "mul_add(3, 5, 2) = ";
     print_int result;
@@ -43,32 +43,32 @@ let () =
 
     let signature = create_signature return_sys_char [ sys_char; sys_char; sys_char ] in
 
-    let my_function = create_function3 signature (fun a b c ->
-        return b
+    let (compiled_second, second) = create_function3 signature (fun _ a b c ->
+        ret b
     )
     in
 
-    let result = my_function 'a' 'b' 'c' in
+    let result = compiled_second 'a' 'b' 'c' in
     print_char result;
     print_endline "";
 
     let signature = create_signature return_float32 [ float32 ] in
 
-    let my_function = create_function1 signature (fun x ->
-        return x
+    let (compiled_identity, identity) = create_function1 signature (fun _ x ->
+        ret x
     )
     in
 
-    let result = my_function 3.5 in
+    let result = compiled_identity 3.5 in
     print_float result;
     print_endline "";
 
     let signature = create_signature return_float32 [ float32; float32; float32 ] in
 
-    let my_function = create_function3 signature (fun x y z ->
-        x * y >>= (+) z
+    let (compiled_mul_add, mul_add) = create_function3 signature (fun _ x y z ->
+        x * y >>= (+) z >>= ret
     ) in
-    let result = my_function 3.5 5.5 2.5 in
+    let result = compiled_mul_add 3.5 5.5 2.5 in
 
     print_string "mul_add(3.5, 5.5, 2.5) = ";
     print_float result;
@@ -76,10 +76,10 @@ let () =
 
     let signature = create_signature return_sys_double [ sys_double; sys_double; sys_double ] in
 
-    let my_function = create_function3 signature (fun x y z ->
-        x * y >>= (+) z
+    let (compiled_mul_add, mul_add) = create_function3 signature (fun _ x y z ->
+        x * y >>= (+) z >>= ret
     ) in
-    let result = my_function 3.5 5.5 2.5 in
+    let result = compiled_mul_add 3.5 5.5 2.5 in
 
     print_string "mul_add(3.5, 5.5, 2.5) = ";
     print_float result;
