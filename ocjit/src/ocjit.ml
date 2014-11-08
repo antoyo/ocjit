@@ -59,9 +59,16 @@ let if_ condition instructions jit_function =
     instructions jit_function;
     jit_insn_label jit_function label
 
+let int value jit_function = jit_value_create_nint_constant jit_function jit_type_sys_int value
+
 let ret value jit_function = jit_insn_return jit_function value
 
 (* Functions *)
+
+let compile_function0 func callable_function jit_function =
+    let executed_function = func callable_function in
+    executed_function jit_function;
+    1
 
 let compile_function1 func callable_function jit_function =
     let param1 = jit_value_get_param jit_function 0 in
@@ -83,6 +90,24 @@ let compile_function3 func callable_function jit_function =
     let executed_function = func callable_function param1 param2 param3 in
     executed_function jit_function;
     1
+
+let create_function0 signature func = 
+    let { signature_return_type } = signature in
+    let signature = jit_type_create_signature (fst signature_return_type) [] in
+
+    let jit_function = jit_function_create context signature in
+
+    let callable_function = (fun jfunc ->
+        jit_insn_call jfunc "" jit_function []
+    ) in
+
+    jit_function_set_on_demand_compiler jit_function (compile_function0 func callable_function);
+
+    let result = snd signature_return_type in
+    ((fun () ->
+        jit_function_apply jit_function [] result;
+        get_return result
+    ), callable_function)
 
 let create_function1 signature func = 
     let { signature_return_type; signature_parameter_types } = signature in

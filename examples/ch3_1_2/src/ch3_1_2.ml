@@ -83,4 +83,15 @@ let () =
 
     print_string "mul_add(3.5, 5.5, 2.5) = ";
     print_float result;
-    print_endline ""
+    print_endline "";
+
+    let signature = create_signature return_sys_int [] in
+
+    let (compiled_return42, return42) = create_function0 signature (fun _ ->
+        int 42 >>= ret
+    )
+    in
+
+    let result = compiled_return42 () in
+    print_int result;
+    print_endline "";

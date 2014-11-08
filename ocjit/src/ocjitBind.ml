@@ -69,6 +69,7 @@ let jit_type_float32' = foreign_value "jit_type_float32" jit_type
 let jit_type_sys_char' = foreign_value "jit_type_sys_char" jit_type
 let jit_type_sys_double' = foreign_value "jit_type_sys_double" jit_type
 let jit_type_sys_int' = foreign_value "jit_type_sys_int" jit_type
+let jit_type_void' = foreign_value "jit_type_void" jit_type
 
 (* Wrapper values *)
 
@@ -78,6 +79,7 @@ let jit_type_float32 = !@ jit_type_float32'
 let jit_type_sys_char = !@ jit_type_sys_char'
 let jit_type_sys_double = !@ jit_type_sys_double'
 let jit_type_sys_int = !@ jit_type_sys_int'
+let jit_type_void = !@ jit_type_void'
 
 (* Functions *)
 
@@ -85,6 +87,8 @@ let get_return = (!@)
 
 let float32_param value = allocate float value
     |> to_voidp
+
+let no_return = null
 
 let sys_char_param value = allocate char value
     |> to_voidp
@@ -136,6 +140,9 @@ let jit_insn_branch_if_not = foreign "jit_insn_branch_if_not" (jit_function @-> 
 
 let jit_insn_call' = foreign "jit_insn_call" (jit_function @-> string @-> jit_function @-> int @-> ptr jit_value @-> int @-> int @-> returning jit_value)
 
+let native_function = int @-> returning void
+let jit_insn_call_native' = foreign "jit_insn_call_native" (jit_function @-> string @-> funptr native_function @-> jit_type @-> ptr jit_value @-> int @-> int @-> returning jit_value)
+
 let jit_insn_eq = foreign "jit_insn_eq" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
 
 let jit_insn_ge = foreign "jit_insn_ge" (jit_function @-> jit_value @-> jit_value @-> returning jit_value)
@@ -158,6 +165,8 @@ let jit_type_create_signature' = foreign "jit_type_create_signature" (jit_abi @-
 
 let jit_uses_interpreter = foreign "jit_uses_interpreter" (void @-> returning int)
 
+let jit_value_create_nint_constant = foreign "jit_value_create_nint_constant" (jit_function @-> jit_type @-> int @-> returning jit_value)
+
 let jit_value_get_param = foreign "jit_value_get_param" (jit_function @-> int @-> returning jit_value)
 
 (* Wrapper functions *)
@@ -174,6 +183,10 @@ let jit_insn_call jit_function function_name function_to_call arguments =
 let jit_insn_call_tail jit_function function_name function_to_call arguments =
     let temp_arguments = CArray.of_list jit_value arguments in
     jit_insn_call' jit_function function_name function_to_call 0 (CArray.start temp_arguments) (CArray.length temp_arguments) jit_call_tail
+
+let jit_insn_call_native jit_function function_name function_to_call signature arguments =
+    let temp_arguments = CArray.of_list jit_value arguments in
+    jit_insn_call_native' jit_function function_name function_to_call signature (CArray.start temp_arguments) (CArray.length temp_arguments) 0
 
 let jit_type_create_signature return_type params =
     let params_array = CArray.of_list jit_type params in
